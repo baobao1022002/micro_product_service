@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.LockProductDTO;
 import com.example.demo.dto.ProductDTO;
 import com.example.demo.dto.ProductFilter;
 import com.example.demo.entity.Product;
@@ -19,5 +20,7 @@ public interface ProductService {
     void deleteAll();
 
     List<Product> search(ProductFilter productFilter);
+
+    void lock(LockProductDTO lockProduct);
 
 }

@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.LockProductDTO;
+import com.example.demo.dto.LockProductItemDTO;
 import com.example.demo.dto.ProductDTO;
 import com.example.demo.dto.ProductFilter;
 import com.example.demo.entity.Product;
@@ -8,11 +10,14 @@ import com.example.demo.mapper.ProductMapper;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.service.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -61,5 +66,23 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> search(ProductFilter productFilter) {
         return productRepository.findByIdIn(productFilter.getIds());
+    }
+
+    @Override
+    @Transactional
+    public void lock(LockProductDTO lockProduct) {
+        List<LockProductItemDTO> items = lockProduct.getItems();
+
+        var productQuantityMap = items.stream().collect(
+                (Collectors.toMap(LockProductItemDTO::getId, LockProductItemDTO::getQuantity)));
+
+        List<Product> products = productRepository.findByIdIn(new ArrayList<>(productQuantityMap.keySet()));
+
+        // to adding validation
+        products.forEach(product -> {
+            product.setStock(product.getStock() - productQuantityMap.get(product.getId()));
+        });
+
+        productRepository.saveAll(products);
     }
 }

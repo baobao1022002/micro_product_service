@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.BaseResponse;
+import com.example.demo.dto.LockProductDTO;
 import com.example.demo.dto.ProductDTO;
 import com.example.demo.dto.ProductFilter;
 import com.example.demo.entity.Product;
@@ -75,6 +76,14 @@ public class ProductController {
 
         return ResponseEntity.ok(
                 new BaseResponse<>(products, "Get all products by ids successfully")
+        );
+    }
+
+    @PostMapping("/lock")
+    public ResponseEntity<BaseResponse<Boolean>> lock(@RequestBody LockProductDTO lockProduct) {
+        productService.lock(lockProduct);
+        return ResponseEntity.ok(
+                new BaseResponse<>(true, "Success")
         );
     }
 
