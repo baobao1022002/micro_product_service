@@ -1,9 +1,10 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.request.BaseResponse;
-import com.example.demo.dto.request.CreateProductReq;
+import com.example.demo.common.BaseResponse;
+import com.example.demo.dto.ProductDTO;
+import com.example.demo.dto.ProductFilter;
 import com.example.demo.entity.Product;
-import com.example.demo.service.ProductServie;
+import com.example.demo.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,11 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/v1/products")
 public class ProductController {
-    private final ProductServie productService;
+    private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse<Product>> create(@RequestBody @Valid CreateProductReq createProductReq) {
-        return ResponseEntity.ok(new BaseResponse<>(productService.create(createProductReq), "Success"));
+    public ResponseEntity<BaseResponse<Product>> create(@RequestBody @Valid ProductDTO productDTO) {
+        return ResponseEntity.ok(new BaseResponse<>(productService.create(productDTO), "Success"));
     }
 
     // GET BY ID
@@ -65,6 +66,15 @@ public class ProductController {
 
         return ResponseEntity.ok(
                 new BaseResponse<>(null, "Deleted all products successfully")
+        );
+    }
+
+    @PostMapping("/search")
+    public ResponseEntity<BaseResponse<List<Product>>> seacrh(@RequestBody ProductFilter productFilter) {
+        List<Product> products = productService.search(productFilter);
+
+        return ResponseEntity.ok(
+                new BaseResponse<>(products, "Get all products by ids successfully")
         );
     }
 

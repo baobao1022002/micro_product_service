@@ -1,12 +1,13 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.request.CreateProductReq;
+import com.example.demo.dto.ProductDTO;
+import com.example.demo.dto.ProductFilter;
 import com.example.demo.entity.Product;
 import com.example.demo.exception.ApplicationException;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
-import com.example.demo.service.ProductServie;
+import com.example.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,19 +17,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ProductServiceImpl implements ProductServie {
+public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
     @Override
-    public Product create(CreateProductReq createProductReq) {
-        var existedCategoryOptional = categoryRepository.findById(createProductReq.getCategoryId());
+    public Product create(ProductDTO productDTO) {
+        var existedCategoryOptional = categoryRepository.findById(productDTO.getCategoryId());
         if (existedCategoryOptional.isEmpty()) {
             throw new ApplicationException("Category not found");
         }
-        Product creatingProduct = productMapper.fromProductRequest(createProductReq);
+        Product creatingProduct = productMapper.fromProductRequest(productDTO);
         creatingProduct.setIsDeleted(false);
         return productRepository.save(creatingProduct);
     }
@@ -55,5 +56,10 @@ public class ProductServiceImpl implements ProductServie {
     @Override
     public void deleteAll() {
         productRepository.deleteAll();
+    }
+
+    @Override
+    public List<Product> search(ProductFilter productFilter) {
+        return productRepository.findByIdIn(productFilter.getIds());
     }
 }
