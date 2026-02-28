@@ -71,7 +71,7 @@ public class ProductController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<BaseResponse<List<Product>>> seacrh(@RequestBody ProductFilter productFilter) {
+    public ResponseEntity<BaseResponse<List<Product>>> search(@RequestBody ProductFilter productFilter) {
         List<Product> products = productService.search(productFilter);
 
         return ResponseEntity.ok(

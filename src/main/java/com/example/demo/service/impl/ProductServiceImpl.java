@@ -28,6 +28,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final ProductMapper productMapper;
 
+
     @Override
     public Product create(ProductDTO productDTO) {
         var existedCategoryOptional = categoryRepository.findById(productDTO.getCategoryId());
@@ -76,9 +77,12 @@ public class ProductServiceImpl implements ProductService {
         var productQuantityMap = items.stream().collect(
                 (Collectors.toMap(LockProductItemDTO::getId, LockProductItemDTO::getQuantity)));
 
-        List<Product> products = productRepository.findByIdIn(new ArrayList<>(productQuantityMap.keySet()));
+        List<Product> products = productRepository.findByIdInForUpdate(new ArrayList<>(productQuantityMap.keySet()));
 
-        // to adding validation
+        if (products.isEmpty()) {
+            throw new RuntimeException("Product not found");
+        }
+
         products.forEach(product -> {
             product.setStock(product.getStock() - productQuantityMap.get(product.getId()));
         });

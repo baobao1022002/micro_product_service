@@ -1,8 +1,6 @@
-package consumer.dto;
-
+package com.example.demo.consumer.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import enums.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Order {
+public class OrderItem {
     private String id;
-    private String customerId;
-    private OrderStatus status;
-    private Integer totalAmount;
 
+    private String productId;
+
+    private Integer price;
+
+    private Integer quantity;
 }
